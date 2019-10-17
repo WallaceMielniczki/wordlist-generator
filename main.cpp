@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <ctime>
 
 using namespace std;
 
@@ -14,7 +16,7 @@ int in_vector(string str, vector<string> &v){
     return 0;
 }
 
-void variations(string &str, vector<string> &v){
+void variations(string &str, vector<string> &v, ofstream &file, size_t &nP){
     for (int i = 0; i < str.size(); i++){
         string aux = str;
 
@@ -41,38 +43,38 @@ void variations(string &str, vector<string> &v){
 
         if(!in_vector(aux, v) && aux != str){
             v.push_back(aux);
-            cout << aux << endl;
-            variations(aux, v);
+            file << aux << endl;
+            nP++;
+            variations(aux, v, file, nP);
         }
     }
 }
 
-void generate(vector<string> &keywords, size_t max_len, vector<string> &cur){
-	if(cur.size() == max_len) {
+void generate(vector<string> &keywords, size_t len, vector<string> &cur, ofstream &file, size_t &nP){
+	if(cur.size() == len) {
 		return;
 	}
 	else {
-		for(auto c : keywords) {
+		for(string c : keywords) {
 			vector<string> next;
 
 			for (int i = 0; i < cur.size(); ++i){
 				next.push_back(cur[i]);
 			}
 			next.push_back(c);
-
+	
 			string str;
-			if (next.size() == max_len){
-				for (int i = 0; i < next.size(); i++){
-					cout << next[i];
-					str += next[i];
-				}
-				cout << endl;
+			for (int i = 0; i < next.size(); i++){
+				str += next[i];
 			}
+			
+			file << str << endl;
+			nP++;
 
 			vector<string> v;
-			variations(str, v);
+			variations(str, v, file, nP);
 
-			generate(keywords, max_len, next);
+			generate(keywords, len, next, file, nP);
 		}
 	}
 }
@@ -98,23 +100,34 @@ vector<string> explode(string w, char delimiter){
 
 int main(int argc, char **argv){
 
-	cout << "=========================================================" << endl;
-    cout << "=                                                       =" << endl;
-    cout << "=                  Wordlist Generator                   =" << endl;
-   	cout << "=                                                       =" << endl;
-   	cout << "=========================================================" << endl << endl;
+	cout << " =========================================================" << endl;
+    cout << " =                                                       =" << endl;
+    cout << " =                  Wordlist Generator                   =" << endl;
+   	cout << " =                                                       =" << endl;
+   	cout << " =========================================================" << endl << endl;
 	
 	string skeywords;
-	cout << "Enter the keywords: ";
+	cout << "ENTER THE KEYWORDS: ";
 	cin  >> skeywords;
-	cout << endl;
 
 	vector<string> keywords = explode(skeywords, ';');
 	vector<string> cur;
+
+	ofstream file;
+	file.open("wordlist.txt",  ios::out);
+
+	cout << endl;
+	cout << "- Generating wordlist..." << endl;
 	
-	for (int i = 1; i <= keywords.size(); ++i){
-		generate(keywords, i, cur);
-	}
+	clock_t t = clock();
+	size_t nP = 0;
+
+	generate(keywords, keywords.size(), cur, file, nP);
+	file.close();
+	
+	cout << "- Generated wordlist!" << endl;
+	cout << "  Elapsed time " << (float)(clock() - t)/CLOCKS_PER_SEC << "s" << endl;
+	cout << "  Total passwords " << nP << endl;
 
 	return 0;
 }
