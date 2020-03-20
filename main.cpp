@@ -101,8 +101,8 @@ vector<string> explode(string w, char delimiter){
 int main(int argc, char **argv){
 
 	cout << " =========================================================" << endl;
-    cout << " =                                                       =" << endl;
-    cout << " =                  Wordlist Generator                   =" << endl;
+    	cout << " =                                                       =" << endl;
+        cout << " =                  Wordlist Generator                   =" << endl;
    	cout << " =                                                       =" << endl;
    	cout << " =========================================================" << endl << endl;
 	
